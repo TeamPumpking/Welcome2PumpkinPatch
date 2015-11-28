@@ -1,22 +1,23 @@
 #include <opencv2/opencv.hpp>
+#include "frame.h"
+
+using namespace std;
+using namespace cv;
 
 #define RATE 1.7
-
-using namespace cv;
-using namespace std;
 
 void setAlpha(Mat& srcMat);
 
 int main()
 {
 	VideoCapture cap;
-	Mat frame;
+	vector<Rect> faces;
 	Mat srcROI;
-	Mat gray;
 	Mat sealImg;
 	Mat resizedSealImg;
 	Mat mask;
     
+	Frame frame;
 
 	cap.open(0);
 	if (!cap.isOpened()) {
@@ -36,12 +37,9 @@ int main()
 
 	while (1) {
 
-		cap >> frame;
-		cvtColor(frame, frame, CV_RGB2RGBA);
+		frame.UpdateFrame(cap);
 
-		cvtColor(frame, gray, CV_BGRA2GRAY);
-		vector<Rect> faces;
-		cascade.detectMultiScale(gray, faces, 1.2, 3, 0, Size(20, 20));
+		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
 			//rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
@@ -53,18 +51,10 @@ int main()
 
 			mask = resizedSealImg.clone();
 			setAlpha(mask);
-			int start_x = faces[i].x + faces[i].width / 2 - resizedSealImg.cols / 2;
-			int start_y = faces[i].y + faces[i].height / 2 - resizedSealImg.rows / 2;
-			int end_x = start_x + resizedSealImg.cols;
-			int end_y = start_y + resizedSealImg.rows;
-			if (start_x<0 || start_y<0 || end_x>frame.cols || end_y>frame.rows) continue;
-			srcROI = frame(Rect(start_x, start_y, resizedSealImg.cols, resizedSealImg.rows));
-			imshow("ROI", srcROI);
-			imshow("mask", mask);
-			resizedSealImg.copyTo(srcROI, mask);
+			frame.PutSticker(resizedSealImg, mask, faces[i]);
 		}
 //		imshow("frame", frame);
-		imshow("detect face", frame);
+		frame.ShowFrame();
 
 		switch (int key = waitKey(1))
 		{
@@ -74,7 +64,7 @@ int main()
 			return 0;
 		case 's':
 			//ÉtÉåÅ[ÉÄâÊëúÇï€ë∂Ç∑ÇÈÅD
-			cv::imwrite("img.png", frame);
+			frame.SaveFrame();
 			break;
 		}
 	}
