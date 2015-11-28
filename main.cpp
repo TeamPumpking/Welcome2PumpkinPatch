@@ -11,7 +11,6 @@ int main()
 {
 	VideoCapture cap;
 	Mat frame;
-	Mat srcImg;
 	Mat srcROI;
 	Mat gray;
 	Mat sealImg;
@@ -30,25 +29,25 @@ int main()
 		cerr << "cannot find sealImg" << endl;
 		return -1;
 	}
-	resizedSealImg = sealImg.clone();
 
 	CascadeClassifier cascade;
 	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
 	cascade.load(filename);
 
 	while (1) {
-		cap >> frame;
-		cvtColor(frame, gray, CV_BGR2GRAY);
-		srcImg = frame.clone();
-		cvtColor(srcImg, srcImg, CV_RGB2RGBA);
 
+		cap >> frame;
+		cvtColor(frame, frame, CV_RGB2RGBA);
+
+		cvtColor(frame, gray, CV_BGRA2GRAY);
 		vector<Rect> faces;
 		cascade.detectMultiScale(gray, faces, 1.2, 3, 0, Size(20, 20));
 
 		for (int i = 0; i < faces.size(); i++){
-			//rectangle(srcImg, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
+			//rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
 			double fx = (double)faces[i].width / sealImg.cols*RATE;
 			double fy = (double)faces[i].height / sealImg.rows*RATE;
+			resizedSealImg = sealImg.clone();
 			if (fx>fy) resize(sealImg, resizedSealImg, Size(), fx, fx, INTER_AREA);
 			else resize(sealImg, resizedSealImg, Size(), fy, fy, INTER_AREA);
 
@@ -58,14 +57,14 @@ int main()
 			int start_y = faces[i].y + faces[i].height / 2 - resizedSealImg.rows / 2;
 			int end_x = start_x + resizedSealImg.cols;
 			int end_y = start_y + resizedSealImg.rows;
-			if (start_x<0 || start_y<0 || end_x>srcImg.cols || end_y>srcImg.rows) continue;
-			srcROI = srcImg(Rect(start_x, start_y, resizedSealImg.cols, resizedSealImg.rows));
+			if (start_x<0 || start_y<0 || end_x>frame.cols || end_y>frame.rows) continue;
+			srcROI = frame(Rect(start_x, start_y, resizedSealImg.cols, resizedSealImg.rows));
 			imshow("ROI", srcROI);
 			imshow("mask", mask);
 			resizedSealImg.copyTo(srcROI, mask);
 		}
 //		imshow("frame", frame);
-		imshow("detect face", srcImg);
+		imshow("detect face", frame);
 
 		switch (int key = waitKey(1))
 		{
@@ -75,7 +74,7 @@ int main()
 			return 0;
 		case 's':
 			//ÉtÉåÅ[ÉÄâÊëúÇï€ë∂Ç∑ÇÈÅD
-			cv::imwrite("img.png", srcImg);
+			cv::imwrite("img.png", frame);
 			break;
 		}
 	}
