@@ -17,6 +17,7 @@ int main()
 	Mat sealImg;
 	Mat resizedSealImg;
 	Mat mask;
+    
 
 	cap.open(0);
 	if (!cap.isOpened()) {
@@ -63,7 +64,7 @@ int main()
 			imshow("mask", mask);
 			resizedSealImg.copyTo(srcROI, mask);
 		}
-		imshow("frame", frame);
+//		imshow("frame", frame);
 		imshow("detect face", srcImg);
 
 		switch (int key = waitKey(1))
