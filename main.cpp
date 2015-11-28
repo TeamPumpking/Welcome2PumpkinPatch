@@ -1,4 +1,4 @@
-#include <opencv2/opencv.hpp>
+#include "sticker_image.h"
 
 #define RATE 1.7
 
@@ -18,19 +18,16 @@ int main()
 	Mat resizedSealImg;
 	Mat mask;
     
+    StickerImage sticker_image("share/pumpkin.png");
+    
 
 	cap.open(0);
 	if (!cap.isOpened()) {
 		cerr << "cannot find camera" << endl;
 		return -1;
 	}
-
-	sealImg = imread("share/pumpkin.png", -1);
-	if (sealImg.empty()) {
-		cerr << "cannot find sealImg" << endl;
-		return -1;
-	}
-	resizedSealImg = sealImg.clone();
+    
+    
 
 	CascadeClassifier cascade;
 	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
@@ -44,25 +41,22 @@ int main()
 
 		vector<Rect> faces;
 		cascade.detectMultiScale(gray, faces, 1.2, 3, 0, Size(20, 20));
+        
 
 		for (int i = 0; i < faces.size(); i++){
-			//rectangle(srcImg, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
-			double fx = (double)faces[i].width / sealImg.cols*RATE;
-			double fy = (double)faces[i].height / sealImg.rows*RATE;
-			if (fx>fy) resize(sealImg, resizedSealImg, Size(), fx, fx, INTER_AREA);
-			else resize(sealImg, resizedSealImg, Size(), fy, fy, INTER_AREA);
-
-			mask = resizedSealImg.clone();
-			setAlpha(mask);
-			int start_x = faces[i].x + faces[i].width / 2 - resizedSealImg.cols / 2;
-			int start_y = faces[i].y + faces[i].height / 2 - resizedSealImg.rows / 2;
-			int end_x = start_x + resizedSealImg.cols;
-			int end_y = start_y + resizedSealImg.rows;
+            sticker_image.ResizeSticker(faces[i].width, faces[i].height);
+            sticker_image.GenerateMask();
+            
+			int start_x = faces[i].x + faces[i].width / 2 -sticker_image.resized_sticker_.cols / 2;
+			int start_y = faces[i].y + faces[i].height / 2 - sticker_image.resized_sticker_.rows / 2;
+            
+			int end_x = start_x + sticker_image.resized_sticker_.cols;
+			int end_y = start_y + sticker_image.resized_sticker_.rows;
 			if (start_x<0 || start_y<0 || end_x>srcImg.cols || end_y>srcImg.rows) continue;
-			srcROI = srcImg(Rect(start_x, start_y, resizedSealImg.cols, resizedSealImg.rows));
+			srcROI = srcImg(Rect(start_x, start_y, sticker_image.resized_sticker_.cols, sticker_image.resized_sticker_.rows));
 			imshow("ROI", srcROI);
-			imshow("mask", mask);
-			resizedSealImg.copyTo(srcROI, mask);
+			imshow("mask", sticker_image.mask_);
+			sticker_image.resized_sticker_.copyTo(srcROI, sticker_image.mask_);
 		}
 //		imshow("frame", frame);
 		imshow("detect face", srcImg);
