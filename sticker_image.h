@@ -1,4 +1,4 @@
-#ifndef STICKER_IMAGE_H
+﻿#ifndef STICKER_IMAGE_H
 #define STICKER_IMAGE_H
 
 #include <opencv2/opencv.hpp>

@@ -1,4 +1,4 @@
-#include "sticker_image.h"
+﻿#include "sticker_image.h"
 
 #define RATE 1.7
 
