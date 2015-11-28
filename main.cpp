@@ -18,13 +18,13 @@ int main()
 	Mat resizedSealImg;
 	Mat mask;
 
-	cap.open(2);
+	cap.open(0);
 	if (!cap.isOpened()) {
 		cerr << "cannot find camera" << endl;
 		return -1;
 	}
 
-	sealImg = imread("pumpkin.png", -1);
+	sealImg = imread("share/pumpkin.png", -1);
 	if (sealImg.empty()) {
 		cerr << "cannot find sealImg" << endl;
 		return -1;
@@ -32,7 +32,7 @@ int main()
 	resizedSealImg = sealImg.clone();
 
 	CascadeClassifier cascade;
-	string filename = "haarcascades/haarcascade_frontalface_alt.xml";
+	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
 	cascade.load(filename);
 
 	while (1) {
