@@ -4,12 +4,13 @@ using namespace cv;
 
 void Frame::UpdateFrame(VideoCapture &capture){
 	capture >> frame_;
-	cvtColor(frame_, frame_, CV_RGB2RGBA);
+	cvtColor(frame_, frame_, CV_BGR2BGRA);
 }
 
 void Frame::DetectFaces(CascadeClassifier &cascade, vector<Rect> &faces){
 	Mat gray;
-	cvtColor(frame_, gray, CV_BGRA2GRAY);
+	if (frame_.channels() == 3) cvtColor(frame_, gray, CV_BGR2GRAY);
+	if (frame_.channels() == 4) cvtColor(frame_, gray, CV_BGRA2GRAY);
 
 	cascade.detectMultiScale(gray, faces, 1.2, 3, 0, Size(20, 20));
 
@@ -17,16 +18,16 @@ void Frame::DetectFaces(CascadeClassifier &cascade, vector<Rect> &faces){
 }
 
 void Frame::PutSticker(const Mat &sticker, const Mat &mask, const Rect face){
-	int start_x = face.x + face.width / 2 - sticker.cols / 2;
-	int start_y = face.y + face.height / 2 - sticker.rows / 2;
-	int end_x = start_x + sticker.cols;
-	int end_y = start_y + sticker.rows;
+	Point offset(face.width, face.height);
+	Mat large_frame = Mat::zeros(Size(frame_.cols + offset.x * 2, frame_.rows + offset.y * 2), CV_8UC4);
+	Mat region_of_frame = large_frame(Rect(offset.x, offset.y, frame_.cols, frame_.rows));
+	frame_.copyTo(region_of_frame);
 
-	if (start_x<0 || start_y<0 || end_x>frame_.cols || end_y>frame_.rows) return;
+	Point face_center(offset.x + face.x + face.width / 2, offset.y + face.y + face.height / 2);
+	Mat region_of_sticker = large_frame(Rect(face_center.x - sticker.cols / 2, face_center.y - sticker.rows / 2, sticker.cols, sticker.rows));
+	sticker.copyTo(region_of_sticker, mask);
 
-	Mat ROI = frame_(Rect(start_x, start_y, sticker.cols, sticker.rows));
-	sticker.copyTo(ROI, mask);
-
+	region_of_frame.copyTo(frame_);
 	return;
 }
 
