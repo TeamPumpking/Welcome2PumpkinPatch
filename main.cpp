@@ -1,23 +1,23 @@
 #include <opencv2/opencv.hpp>
+#include "frame.h"
+
+using namespace std;
+using namespace cv;
 
 #define RATE 1.7
-
-using namespace cv;
-using namespace std;
 
 void setAlpha(Mat& srcMat);
 
 int main()
 {
 	VideoCapture cap;
-	Mat frame;
-	Mat srcImg;
+	vector<Rect> faces;
 	Mat srcROI;
-	Mat gray;
 	Mat sealImg;
 	Mat resizedSealImg;
 	Mat mask;
     
+	Frame frame;
 
 	cap.open(0);
 	if (!cap.isOpened()) {
@@ -30,42 +30,31 @@ int main()
 		cerr << "cannot find sealImg" << endl;
 		return -1;
 	}
-	resizedSealImg = sealImg.clone();
 
 	CascadeClassifier cascade;
 	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
 	cascade.load(filename);
 
 	while (1) {
-		cap >> frame;
-		cvtColor(frame, gray, CV_BGR2GRAY);
-		srcImg = frame.clone();
-		cvtColor(srcImg, srcImg, CV_RGB2RGBA);
 
-		vector<Rect> faces;
-		cascade.detectMultiScale(gray, faces, 1.2, 3, 0, Size(20, 20));
+		frame.UpdateFrame(cap);
+
+		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
-			//rectangle(srcImg, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
+			//rectangle(frame, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
 			double fx = (double)faces[i].width / sealImg.cols*RATE;
 			double fy = (double)faces[i].height / sealImg.rows*RATE;
+			resizedSealImg = sealImg.clone();
 			if (fx>fy) resize(sealImg, resizedSealImg, Size(), fx, fx, INTER_AREA);
 			else resize(sealImg, resizedSealImg, Size(), fy, fy, INTER_AREA);
 
 			mask = resizedSealImg.clone();
 			setAlpha(mask);
-			int start_x = faces[i].x + faces[i].width / 2 - resizedSealImg.cols / 2;
-			int start_y = faces[i].y + faces[i].height / 2 - resizedSealImg.rows / 2;
-			int end_x = start_x + resizedSealImg.cols;
-			int end_y = start_y + resizedSealImg.rows;
-			if (start_x<0 || start_y<0 || end_x>srcImg.cols || end_y>srcImg.rows) continue;
-			srcROI = srcImg(Rect(start_x, start_y, resizedSealImg.cols, resizedSealImg.rows));
-			imshow("ROI", srcROI);
-			imshow("mask", mask);
-			resizedSealImg.copyTo(srcROI, mask);
+			frame.PutSticker(resizedSealImg, mask, faces[i]);
 		}
 //		imshow("frame", frame);
-		imshow("detect face", srcImg);
+		frame.ShowFrame();
 
 		switch (int key = waitKey(1))
 		{
@@ -75,7 +64,7 @@ int main()
 			return 0;
 		case 's':
 			//ÉtÉåÅ[ÉÄâÊëúÇï€ë∂Ç∑ÇÈÅD
-			cv::imwrite("img.png", srcImg);
+			frame.SaveFrame();
 			break;
 		}
 	}
