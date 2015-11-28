@@ -5,38 +5,35 @@
 using namespace std;
 using namespace cv;
 
+VideoCapture OpenCamera(int);
+CascadeClassifier LoadClassifier(string);
+
 int main()
 {
 	Frame frame;
     StickerImage sticker_image("share/pumpkin.png");
 
-	VideoCapture cap;
-	cap.open(2);
-	if (!cap.isOpened()) {
-		cerr << "cannot find camera" << endl;
-		exit(-1);
-	}
-
-	CascadeClassifier cascade;
-	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
-	cascade.load(filename);
-	if (cascade.empty()) {
-		cerr << "cannot load cascade file" << endl;
-		exit(-1);
-	}
+	//カメラをオープン
+	VideoCapture capture = OpenCamera(2);
+	//検出器を設定
+	CascadeClassifier cascade = LoadClassifier("share/haarcascades/haarcascade_frontalface_alt.xml");
 
 	vector<Rect> faces;
 	while (1) {
-
-		frame.UpdateFrame(cap);
-
+		//フレームの更新
+		frame.UpdateFrame(capture);
+		//顔の検出
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
+			//ステッカーのサイズ調節
             sticker_image.ResizeSticker(faces[i].width, faces[i].height);
+			//ステッカーのマスク画像生成
             sticker_image.GenerateMask();
+			//ステッカーをフレームの顔の位置に貼り付け
 			frame.PutSticker(sticker_image.resized_sticker_, sticker_image.mask_, faces[i]);
 		}
+		//フレームの出力
 		frame.ShowFrame();
 
 		switch (int key = waitKey(1))
@@ -55,4 +52,24 @@ int main()
 	//念のため
 	cv::destroyAllWindows();
 	return 0;
+}
+
+VideoCapture OpenCamera(int camera_id){
+	VideoCapture cap;
+	cap.open(camera_id);
+	if (!cap.isOpened()) {
+		cerr << "cannot find camera" << endl;
+		exit(-1);
+	}
+	return cap;
+}
+
+CascadeClassifier LoadClassifier(string file_name){
+	CascadeClassifier cascade;
+	cascade.load(file_name);
+	if (cascade.empty()) {
+		cerr << "cannot load cascade file" << endl;
+		exit(-1);
+	}
+	return cascade;
 }
