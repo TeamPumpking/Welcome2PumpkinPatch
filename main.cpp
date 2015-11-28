@@ -11,7 +11,7 @@ void setAlpha(Mat& srcMat);
 int main()
 {
 	VideoCapture cap;
-	vector<Rect> faces;
+
 	Mat srcROI;
 	Mat sealImg;
 	Mat resizedSealImg;
@@ -19,26 +19,30 @@ int main()
     
 	Frame frame;
 
-	cap.open(0);
+	cap.open(2);
 	if (!cap.isOpened()) {
 		cerr << "cannot find camera" << endl;
-		return -1;
+		exit(-1);
 	}
 
 	sealImg = imread("share/pumpkin.png", -1);
 	if (sealImg.empty()) {
 		cerr << "cannot find sealImg" << endl;
-		return -1;
+		exit(-1);
 	}
 
 	CascadeClassifier cascade;
 	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
 	cascade.load(filename);
+	if (cascade.empty()) {
+		cerr << "cannot load cascade file" << endl;
+		exit(-1);
+	}
 
 	while (1) {
-
 		frame.UpdateFrame(cap);
 
+		vector<Rect> faces;
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
@@ -60,7 +64,7 @@ int main()
 		{
 		case 'q':
 			//終了する
-			cv::destroyAllWindows();
+			destroyAllWindows();
 			return 0;
 		case 's':
 			//フレーム画像を保存する．
