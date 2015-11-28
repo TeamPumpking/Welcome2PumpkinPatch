@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 #include <opencv2/opencv.hpp>
 #include "frame.h"
+=======
+#include "sticker_image.h"
+>>>>>>> origin/sticker_class
 
 using namespace std;
 using namespace cv;
@@ -17,19 +21,29 @@ int main()
 	Mat resizedSealImg;
 	Mat mask;
     
+<<<<<<< HEAD
 	Frame frame;
+=======
+    StickerImage sticker_image("share/pumpkin.png");
+    
+>>>>>>> origin/sticker_class
 
 	cap.open(2);
 	if (!cap.isOpened()) {
 		cerr << "cannot find camera" << endl;
 		exit(-1);
 	}
+<<<<<<< HEAD
 
 	sealImg = imread("share/pumpkin.png", -1);
 	if (sealImg.empty()) {
 		cerr << "cannot find sealImg" << endl;
 		exit(-1);
 	}
+=======
+    
+    
+>>>>>>> origin/sticker_class
 
 	CascadeClassifier cascade;
 	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
@@ -43,6 +57,7 @@ int main()
 		frame.UpdateFrame(cap);
 
 		vector<Rect> faces;
+<<<<<<< HEAD
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
@@ -56,6 +71,22 @@ int main()
 			mask = resizedSealImg.clone();
 			setAlpha(mask);
 			frame.PutSticker(resizedSealImg, mask, faces[i]);
+=======
+        
+
+            sticker_image.ResizeSticker(faces[i].width, faces[i].height);
+            sticker_image.GenerateMask();
+            
+			int start_y = faces[i].y + faces[i].height / 2 - sticker_image.resized_sticker_.rows / 2;
+            
+			int end_x = start_x + sticker_image.resized_sticker_.cols;
+			int end_y = start_y + sticker_image.resized_sticker_.rows;
+			if (start_x<0 || start_y<0 || end_x>srcImg.cols || end_y>srcImg.rows) continue;
+			srcROI = srcImg(Rect(start_x, start_y, sticker_image.resized_sticker_.cols, sticker_image.resized_sticker_.rows));
+			imshow("ROI", srcROI);
+			imshow("mask", sticker_image.mask_);
+			sticker_image.resized_sticker_.copyTo(srcROI, sticker_image.mask_);
+>>>>>>> origin/sticker_class
 		}
 //		imshow("frame", frame);
 		frame.ShowFrame();
