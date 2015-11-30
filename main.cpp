@@ -1,6 +1,6 @@
 ﻿#include <opencv2/opencv.hpp>
 #include "frame.h"
-#include "sticker.h"
+#include "sticker_image.h"
 
 using namespace std;
 using namespace cv;
@@ -8,7 +8,7 @@ using namespace cv;
 int main()
 {
 	Frame frame;
-    StickerImage sticker("share/pumpkin.png");
+    StickerImage sticker("share/pumpkin.png"); //stickerの読み込み
 
 	VideoCapture cap;
 	cap.open(0);
@@ -33,8 +33,8 @@ int main()
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
-            sticker.ResizeSticker(faces[i].width, faces[i].height);
-            sticker.GenerateMask();
+            sticker.ResizeSticker(faces[i].width, faces[i].height); //リサイズしたstickerを作成
+            sticker.GenerateMask(); //マスク作成
 			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
 		}
 		frame.ShowFrame();
