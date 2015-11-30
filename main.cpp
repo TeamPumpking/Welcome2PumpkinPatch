@@ -1,6 +1,6 @@
 ﻿#include <opencv2/opencv.hpp>
 #include "frame.h"
-#include "sticker_image.h"
+#include "sticker.h"
 
 using namespace std;
 using namespace cv;
@@ -8,10 +8,10 @@ using namespace cv;
 int main()
 {
 	Frame frame;
-    StickerImage sticker_image("share/pumpkin.png");
+    StickerImage sticker("share/pumpkin.png");
 
 	VideoCapture cap;
-	cap.open(2);
+	cap.open(0);
 	if (!cap.isOpened()) {
 		cerr << "cannot find camera" << endl;
 		exit(-1);
@@ -33,9 +33,9 @@ int main()
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
-            sticker_image.ResizeSticker(faces[i].width, faces[i].height);
-            sticker_image.GenerateMask();
-			frame.PutSticker(sticker_image.resized_sticker_, sticker_image.mask_, faces[i]);
+            sticker.ResizeSticker(faces[i].width, faces[i].height);
+            sticker.GenerateMask();
+			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
 		}
 		frame.ShowFrame();
 
