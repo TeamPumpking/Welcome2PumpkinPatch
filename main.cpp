@@ -10,7 +10,6 @@ CascadeClassifier LoadClassifier(string);
 
 int main()
 {
-	Frame frame;
     Sticker sticker("share/pumpkin.png");
 
 	//カメラをオープン
