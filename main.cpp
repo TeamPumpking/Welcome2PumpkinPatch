@@ -18,6 +18,7 @@ int main()
 	//検出器を設定
 	CascadeClassifier cascade = LoadClassifier("share/haarcascades/haarcascade_frontalface_alt.xml");
 
+	//カメラキャプチャをフレームに設定
 	Frame frame = Frame(capture);
 
 	vector<Rect> faces;
