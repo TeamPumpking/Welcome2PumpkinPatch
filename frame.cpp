@@ -2,8 +2,12 @@
 using namespace std;
 using namespace cv;
 
-void Frame::UpdateFrame(VideoCapture &capture){
-	capture >> frame_;
+Frame::Frame(VideoCapture &capture){
+	capture_ = capture;
+}
+
+void Frame::UpdateFrame(){
+	capture_ >> frame_;
 	cvtColor(frame_, frame_, CV_BGR2BGRA);
 }
 
