@@ -15,6 +15,7 @@ int main()
 
 	//カメラをオープン
 	VideoCapture capture = OpenCamera(0);
+    
 	//検出器を設定
 	CascadeClassifier cascade = LoadClassifier("share/haarcascades/haarcascade_frontalface_alt.xml");
 
