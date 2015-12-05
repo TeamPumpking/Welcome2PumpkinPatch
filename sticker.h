@@ -6,10 +6,10 @@
 using namespace cv;
 using namespace std;
 
-class StickerImage {
+class Sticker {
 
 public:
-    StickerImage(string image);
+    Sticker(string image);
     
     void ResizeSticker(double face_w, double face_h);
     void GenerateMask();
