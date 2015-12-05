@@ -16,8 +16,8 @@ void StickerImage::ResizeSticker(double face_w, double face_h){
     double fx = face_w / sticker_.cols * RATE;
     double fy = face_h / sticker_.rows * RATE;
 
-    if(fx > fy) resize(sticker_, resized_sticker_, Size(), fy, fy, INTER_AREA);
-    else resize(sticker_, resized_sticker_, Size(), fx, fx, INTER_AREA);
+    if(fx > fy) resize(sticker_, resized_sticker_, Size(), fx, fx, INTER_AREA);
+    else resize(sticker_, resized_sticker_, Size(), fy, fy, INTER_AREA);
 }
 
 void StickerImage::GenerateMask(){
