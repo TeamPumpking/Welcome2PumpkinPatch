@@ -6,22 +6,22 @@
 using namespace cv;
 using namespace std;
 
-class StickerImage {
+class Sticker {
 
 public:
-    StickerImage(string image);
+    Sticker(string image);
     
     void ResizeSticker(double face_w, double face_h);
     void GenerateMask();
     
-    Mat GetMask;
-    
+    Mat GetMask();
+    Mat GetSticker();
+    Mat GetResizedSticker();
+
+  private:
     Mat mask_;
     Mat sticker_;
     Mat resized_sticker_;
-
-
-  private:
 };
 
 #endif

@@ -1,6 +1,6 @@
 ﻿#include <opencv2/opencv.hpp>
 #include "frame.h"
-#include "sticker_image.h"
+#include "sticker.h"
 
 using namespace std;
 using namespace cv;
@@ -10,11 +10,12 @@ CascadeClassifier LoadClassifier(string);
 
 int main()
 {
-
-    StickerImage sticker("share/pumpkin.png"); //stickerの読み込み
+	Frame frame;
+    Sticker sticker("share/pumpkin.png");
 
 	//カメラをオープン
-	VideoCapture capture = OpenCamera(2);
+	VideoCapture capture = OpenCamera(0);
+    
 	//検出器を設定
 	CascadeClassifier cascade = LoadClassifier("share/haarcascades/haarcascade_frontalface_alt.xml");
 
@@ -35,7 +36,7 @@ int main()
 			//ステッカーのマスク画像生成
             sticker.GenerateMask();
 			//ステッカーをフレームの顔の位置に貼り付け
-			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
+			frame.PutSticker(sticker.GetResizedSticker(), sticker.GetMask(), faces[i]);
 		}
 		//フレームの出力
 		frame.ShowFrame();

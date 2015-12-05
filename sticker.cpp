@@ -1,8 +1,8 @@
-﻿#include "sticker_image.h"
+﻿#include "sticker.h"
 
 #define RATE 1.7
 
-StickerImage::StickerImage(string image){
+Sticker::Sticker(string image){
     sticker_ = imread(image, -1);
 
     if(sticker_.empty()){
@@ -11,7 +11,7 @@ StickerImage::StickerImage(string image){
     }
 }
 
-void StickerImage::ResizeSticker(double face_w, double face_h){
+void Sticker::ResizeSticker(double face_w, double face_h){
     resized_sticker_ = sticker_.clone();
     double fx = face_w / sticker_.cols * RATE;
     double fy = face_h / sticker_.rows * RATE;
@@ -20,7 +20,7 @@ void StickerImage::ResizeSticker(double face_w, double face_h){
     else resize(sticker_, resized_sticker_, Size(), fy, fy, INTER_AREA);
 }
 
-void StickerImage::GenerateMask(){
+void Sticker::GenerateMask(){
     mask_ = resized_sticker_.clone();
     int width = mask_.cols;
     int height = mask_.rows;
@@ -43,9 +43,20 @@ void StickerImage::GenerateMask(){
     }
 }
 
-//Mat GetMask(){
-//    Mat output = mask_;
-//    return output;
-//}
+Mat Sticker::GetMask(){
+    Mat output = mask_;
+    return output;
+}
+
+Mat Sticker::GetSticker(){
+    Mat output = sticker_;
+    return output;
+}
+
+Mat Sticker::GetResizedSticker(){
+    Mat output = resized_sticker_;
+    return output;
+}
+
 
 
