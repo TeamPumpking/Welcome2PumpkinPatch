@@ -10,7 +10,7 @@ CascadeClassifier LoadClassifier(string);
 
 int main()
 {
-	Frame frame;
+
     StickerImage sticker("share/pumpkin.png"); //stickerの読み込み
 
 	//カメラをオープン
@@ -18,11 +18,13 @@ int main()
 	//検出器を設定
 	CascadeClassifier cascade = LoadClassifier("share/haarcascades/haarcascade_frontalface_alt.xml");
 
+	Frame frame = Frame(capture);
+
 	vector<Rect> faces;
 	while (1) {
 
 		//フレームの更新
-		frame.UpdateFrame(capture);
+		frame.UpdateFrame();
 		//顔の検出
 		frame.DetectFaces(cascade, faces);
 
