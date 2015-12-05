@@ -46,7 +46,6 @@ int main()
             sticker.ResizeSticker(faces[i].width, faces[i].height); //リサイズしたstickerを作成
             sticker.GenerateMask(); //マスク作成
 			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
-=======
 			//ステッカーのサイズ調節
             sticker_image.ResizeSticker(faces[i].width, faces[i].height);
 			//ステッカーのマスク画像生成
