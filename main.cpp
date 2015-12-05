@@ -13,20 +13,6 @@ int main()
 	Frame frame;
     StickerImage sticker("share/pumpkin.png"); //stickerの読み込み
 
-	VideoCapture cap;
-	cap.open(0);
-	if (!cap.isOpened()) {
-		cerr << "cannot find camera" << endl;
-		exit(-1);
-	}
-
-	CascadeClassifier cascade;
-	string filename = "share/haarcascades/haarcascade_frontalface_alt.xml";
-	cascade.load(filename);
-	if (cascade.empty()) {
-		cerr << "cannot load cascade file" << endl;
-		exit(-1);
-	}
 	//カメラをオープン
 	VideoCapture capture = OpenCamera(2);
 	//検出器を設定
@@ -35,23 +21,18 @@ int main()
 	vector<Rect> faces;
 	while (1) {
 
-		frame.UpdateFrame(cap);
-
 		//フレームの更新
 		frame.UpdateFrame(capture);
 		//顔の検出
 		frame.DetectFaces(cascade, faces);
 
 		for (int i = 0; i < faces.size(); i++){
-            sticker.ResizeSticker(faces[i].width, faces[i].height); //リサイズしたstickerを作成
-            sticker.GenerateMask(); //マスク作成
-			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
 			//ステッカーのサイズ調節
-            sticker_image.ResizeSticker(faces[i].width, faces[i].height);
+            sticker.ResizeSticker(faces[i].width, faces[i].height);
 			//ステッカーのマスク画像生成
-            sticker_image.GenerateMask();
+            sticker.GenerateMask();
 			//ステッカーをフレームの顔の位置に貼り付け
-			frame.PutSticker(sticker_image.resized_sticker_, sticker_image.mask_, faces[i]);
+			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
 		}
 		//フレームの出力
 		frame.ShowFrame();
