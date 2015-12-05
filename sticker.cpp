@@ -43,9 +43,20 @@ void Sticker::GenerateMask(){
     }
 }
 
-//Mat GetMask(){
-//    Mat output = mask_;
-//    return output;
-//}
+Mat Sticker::GetMask(){
+    Mat output = mask_;
+    return output;
+}
+
+Mat Sticker::GetSticker(){
+    Mat output = sticker_;
+    return output;
+}
+
+Mat Sticker::GetResizedSticker(){
+    Mat output = resized_sticker_;
+    return output;
+}
+
 
 

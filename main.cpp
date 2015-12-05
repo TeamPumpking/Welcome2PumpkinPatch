@@ -33,7 +33,7 @@ int main()
 			//ステッカーのマスク画像生成
             sticker.GenerateMask();
 			//ステッカーをフレームの顔の位置に貼り付け
-			frame.PutSticker(sticker.resized_sticker_, sticker.mask_, faces[i]);
+			frame.PutSticker(sticker.GetResizedSticker(), sticker.GetMask(), faces[i]);
 		}
 		//フレームの出力
 		frame.ShowFrame();

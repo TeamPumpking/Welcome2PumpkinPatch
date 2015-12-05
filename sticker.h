@@ -14,14 +14,14 @@ public:
     void ResizeSticker(double face_w, double face_h);
     void GenerateMask();
     
-    Mat GetMask;
-    
+    Mat GetMask();
+    Mat GetSticker();
+    Mat GetResizedSticker();
+
+  private:
     Mat mask_;
     Mat sticker_;
     Mat resized_sticker_;
-
-
-  private:
 };
 
 #endif
